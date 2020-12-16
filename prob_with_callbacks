@@ -1,0 +1,97 @@
+/*  
+In many apps it's useful to be able to detect where a user is located.
+
+Say we're creating a restaurant application where we want to detect the location of a given user 
+so we can see what restaurants are around them.
+
+So this feature is called "geolocation" and it's a tool that's available on the window object. We can get it by doing like so:
+
+navigator.geolocation.getCurrentPosition(position => {
+    console.log(position);
+});
+
+console.log(done);
+
+›done
+›Position
+
+and "geolocation" gives us a number of helpful methods to get the user's location/position in the world, specifically one called "getCurrentPosition()" and "getCurrentPosition()" accepts a "callback" function which will be given the position data when it's retrieved.
+
+So for the callback we can use whatever function we like (function declaration or arrow function) which will then be passed the position data, and for now let's just console.log the data that we get from "position" as demonstrated in the immediately above code.
+
+And just to see when this process is done, we'll add a console.log("done") on the line below "getCurrentPosition()".
+
+And when we run the immediately above block of code we see that our response comes back but we get something strange. Instead of getting the "position" first and then seeing "done", we see "done" first and then the "position" sometime later.
+
+So what's happening? Usually when we put a second line of code after the first one the expectation is that the second line runs later, right? This is a clear example of "asynchronous" code which is a complex sounding word for a simple idea that in javaScript, as one line of code is being executed it can still move forward in our program and run the code that follows.
+
+Two examples of "async" code that we've encountered before are:
+
+    - setTimeout() => where we wait a certain period of time before executing some code, as well as;
+    - event listeners namely addEventListener()
+    
+and in both cases we saw that we could use these functions without it stopping our entire program. That's a good thing, people wouldn't want to use our app if we couldn't continue running until a certain event took place like a mouse click or a timer to finish.
+
+In other words, "async" code is non-blocking and that's a very good thing. Our program can continue to work while javaScript is doing things like fetching the user's position.
+
+Now that we understand the benefit of "async" code a bit better let's take a look at how this "async" operation is handled with "getCurrentPosition()".
+
+"getCurrentPosition()" does what it needs to get the user's position and that takes a certain period of time, and when it gets that "position" data it passes it to the callback function we've provided, and then we can do with the data what we like.
+
+But the problem as we saw with the callback pattern here:
+
+navigator.geolocation.getCurrentPosition(position => {
+    console.log(position);
+});
+
+console.log(done);
+
+is that we couldn't expect code after the function - i.e. console.log("done") - to run afterwards.
+
+So what can we do if we want any code to run afterwards??
+We have to put it inside the "callback" too like so:
+
+navigator.geolocation.getCurrentPosition(position => {
+    console.log(position);
+    console.log(done);
+});
+
+This might seem fine at first but try to imagine that the rest of our program relies on the "position" data, all of our code must then have to be stuffed into this one "callback" function. Not a great way to organise our code, that's one.
+
+Also, try to imagine if we have multiple "asynchronous" operations that we have to perform after getting the position. Many other "async" operations use this callback-based approach.
+
+So say if we wanted to get restaurants based off of the position, we might have a structure that looks like so:
+
+navigator.geolocation.getCurrentPosition(position => {
+    console.log(position);
+    getRestaurants(position, restaurants => {
+        console.log(restaurants);
+    })
+    console.log(done);
+});
+
+this fucntion "getRestaurants()" doesn't exist but we can easily create one like it. Well, what's the problem here? Our program (immediately above block of code) is poorly organised since the rest of our program has to be stuffed into the last callback as well as little ability to manage it like so:
+
+navigator.geolocation.getCurrentPosition(position => {
+    console.log(position);
+    getRestaurants(position, restaurants => {
+        console.log(restaurants);
+        console.log(done);
+    })
+});
+
+This highly nested structure that emerges with multiple callbacks is called "callback hell".
+
+And the final problem with callbacks, which has been long standard for creating "asynchronous" operations in javaScript, is that when using multiple callback-based functions we create this hierarchy of functions that are dependent upon one another to resolve successfully.
+
+Try to imagine what we would do if there was an error in getting the position for the first callback. On top of that we don't get any information about the execution of functions, we just deal with the data whenever it comes back and hopefully our program doesn't break in the process. This problem is called the "inversion of control problem". We don't have control of our program, we're giving it to these callbacks and just hoping that they resolve as they should.
+
+Fortunately, using some newer javaScript features there are some better ways to handle important "asynchronous" code which we will cover in the next section.
+
+
+
+
+
+
+
+*/

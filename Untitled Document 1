@@ -1,0 +1,40 @@
+reduce()
+==========
+- Take a piece of data in the form of an array and transforms
+it into something else.
+
+- map() will always return an array, however, reduce() gives us any type of value that we need.
+
+- reduce() iterates over all of our array elements.
+
+- Has 2 arguments:
+	=> a callback function
+	=> initial value of the operation we want to perform
+
+- Before getting each element in the parameters to the callback
+function, we have a special value - "accumulator"
+
+- Always return the "accumulator" as opposed to the element itself.
+
+- reduce() is "REMEMBER THE VALUE OF THE ACCUMULATOR EVERY
+TIME THE FUNCTION RUNS FOR EVERY SINGLE ELEMENT IN OUR
+ARRAY".
+
+- For the "accumulator" to work and store new values, it has
+to be returned every time the function runs
+
+menuItems.reduce((accumulator, menuItem) => {
+	return accumulator
+}, 0)
+
+
+filter()
+=========
+- Returns a subset of data (i.e. a slice of the array).
+
+- Great use for it is for searching arrays for certain subsets 
+of data.
+
+- Does not mutate or change the original array.
+
+- Will return to us in an array the elements for which the condition was met i.e. will return elements in an array that meet the condition we provide or specify in the body.

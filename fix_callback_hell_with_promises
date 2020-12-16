@@ -1,0 +1,197 @@
+/*  
+We're are going to see how to fix our current problems with "async" code and callbacks by using
+promises.
+
+So what are promises and why were they created??
+
+Promises were added to the language in ES 2015 to make dealing with "async" code easier and there's a very clear way to understand exactly how they work and what benefits they bring to the table.
+
+Let's say we're out getting lunch at a local restaurant which has a lot of great sandwiches and soups. For this restaurant, they prepare our food and let us know when it's ready to be picked up but we have to wait for it to be ready and then take it to our table. So you order your food first and you're waiting for it to be announced. You're being delivered food in the old manner where you order, wait by the kitchen, and then pick up the food when your name is called. With this approach you're giving complete control to the kitchen. You're staying close by the kitchen and you're waiting and waiting and then finally they give you your food, and ooops it's the wrong thing. Plus you were waiting so intently that you missed an important call in the process.
+
+Meanwhile, the restaurant is trying a different approach with me. Instead of making their customers wait by the kitchen they give me a little buzzer. You might have seen this at restaurants before, this buzzer will tell me the status of my order at any moment, whether it's still pending (meaning still being made), fulfilled (that my order is ready), or rejected (meaning they couldn't complete my order for some reason). So since I can clearly see the status of my order I can do what I need to. At first the status of my order is pending and while that's the case I pick up the best sit in the restaurant, make a quick call, and it buzzes telling me that the order was fulfilled (that it was successful). 
+
+This buzzer is the exact same as a "promise". "Promises" tell us the status of "async" code that we're executing, so we can go off and do what we need as it's being resolved and when we come back it's either fulfilled or rejected, we then handle either outcome as the case may be.
+
+Unlike the callback-based pattern, "promises" are powerful because they give us control.
+
+So let's see how "promises" work hands-on by creating one.
+
+We create "promises" with the "promise" constructor function like so:
+
+new Promise();
+
+and what may seem strange about "promises" is that to this constructor function we have to provide a callback function to it like so:
+
+new Promise(() => {});
+
+otherwise we get an error.
+
+So, what? Another callback function? Yes, fundamentally normal "promises" still implement callbacks but it's a callback that gives us control over how our code is resolved. There are 2 arguments, the first is called "resolve" and the second is called "reject" as demonstrated below:
+
+new Promise((resolve, reject) => {});
+
+Once again, we can provide whatever kind of function that we wanted in the callback but here we use an arrow function for brevity as demonstrated in the immediately above code.
+
+So in our restaurant analogy, the buzzer had 3 states (pending, fulfilled, and rejected). These correspond exactly to all of the possible states of a "promise". But how does the "promise" change from one of these states to another?? Well, by default whenever a promise is created it has a value of pending and we wait for it to be resolved.
+
+With the promise that we create ourselves we must manually resolve it depending on whether we consider the operation to have been successful or not. So that's where the 2 arguments come into play (resolve and reject), and they're both functions themselves. "resolve" is a function that allows you to change the status of a "promise" to fulfilled, and "reject" is a function that allows you to change the status of the "promise" to rejected.
+
+Let's take a very simple example where we use a setTimeout() and this setTimeout() is going to wait for a second and then resolve our promise with the value "done" just like our console.log before like so:
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("done"), 1000); 
+});
+
+console.log(promise);
+
+›Promise
+
+so we have our setTimeout() and we pass it an arrow function and then we resolve the value "done" after 1000ms as demonstrated in the immediately above code.
+
+So with the immediately above code, when we run it we know what's going to happen. Since we're using a constructor function here we're going to get an instance of a "promise" returned to us.
+
+When we run the immediately above code we just see an instance of our "promise" as demonstrated in the output. So an instance of our "promise" was created and the initial status of this "promise" we know was "pending", however, we don't see that the "promise" was resolved with its value that we passed to the resolve function.
+
+So we can create a "promise" with a constructor but how do we listen for changes with our "promises" for when the "promise" is either "fulfilled" or "rejected"? 
+
+So as we know, constructor functions create objects and these objects can have their own properties and methods, and all created "promises" can invoke 2 methods - then() and catch() - both of which accept their own function: 
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("done"), 1000); 
+});
+
+promise.then(()=> {}).catch(() => {});
+
+When "resolve" is called, the code will execute the function that's passed to the then() method, and if "reject" is called, the code will execute the function that's passed to the catch() method. And note that for every "promise" only one "resolve" or "reject" function can be executed. We can't have a "promise" call "resolve" twice or call both "resolve" and "reject". A "promise" is either "fulfilled" or "rejected".
+
+And another thing to note is that since we have then() and catch() as methods, we can use method chaining (we can chain one after the other) and that's how they're commonly used.
+
+So for the then(), when our "promise" is "resolved", at the end we just console.log "success" to see that it was resolved successfully, and for the catch() we'll console.log "failure" like so:
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("done"), 1000); 
+});
+
+promise.then(() => console.log("success")).catch(() => console.log("failure"));
+
+›success
+
+and when we execute the immediately above block of code, we wait a second and then we see "success", and this is because our then() callback runs due to our "promise" being resolved. And note that our catch() callback is not run.
+
+However, we're still not getting the value that was passed to the "resolve" function. How do we get that?
+
+From the parameters of the then() callback, we can name it whatever we like, say "value". We can get access to whatever value that we passed to the "resolve" function like so:
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("done"), 1000); 
+});
+
+promise.then(value => console.log(value)).catch(() => console.log("failure"));
+
+›done
+
+and when we run the immediately above code, after a second we see the value "done".
+
+Now let's try rejecting our promise with the "reject" function. So instead of using "resolve" we use "reject" and we won't pass it anything for now like so:
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => reject(), 1000);
+});
+
+promise.then(value => console.log(value)).catch(() => console.log("failure"));
+
+and when this is done we should see our "catch" callback run. So after a second we see that "failure" has been logged out. And if a "promise" fails we don't just want to log that it failed, we want to throw an error which we can do within "reject" by using "error" like so:
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => reject(error("Promise failed")), 1000);
+});
+
+promise.then(value => console.log(value)).catch(error => console.error(error));
+
+!Error: Promise failed.
+
+and we can provide to "error" whatever message that we want such as "Promise failed" as demonstrated in the immediately above code.
+
+So we can receive the "error" in the parameters of catch(), and also to better indicate the error, instead of using a console.log we can use console.error for some better formatting as demonstrated in the immediately above code.
+
+And when we run the immediately above code, after a second, we see our error as shown in the output to the immediately above code, and we see that it's highlighted in red to indicate that there was a problem. And though browser support for it isn't perfect, there's a new "promise" method that we have access to called "finally()" which enables us to run code when the "promise" is resolved regardless of whether successfully or not.
+
+Say we want to know when our "promise is resolved", we chain on at the very end (after catch()) finally(), and in it's callback we can just console.log("done") like we had before like so:
+
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => reject(error("Promise failed")), 1000);
+});
+
+promise
+    .then(value => console.log(value))
+    .catch(error => console.error(error))
+    .finally(() => console.log("done"));
+    
+and if we run this again we first see our error and then at the end we see "done".
+
+So that's a reminder that with finally() either then() or catch() will still be run before it.
+
+So now that we're familiar with "promises", their benefits over callbacks, their different states, and how to construct them (so how to resolve them), let's revisit our callback-based example and see how to use "promises" to make it better:
+
+navigator.geolocation.getCurrentPosition(position => {
+    console.log(position)
+});
+
+So we want to use "promises" with this example above.
+
+Let's begin by making a promise constructor with its callback:
+
+const promise = new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(position => {
+    resolve(position)
+}, error => {
+    reject(error);
+});
+});
+
+promise
+    .then(position => console.log(position))
+    .catch(error => console.log(error));
+    .finally(() => console.log("done"));
+    
+
+const promise = new Promise((resolve, reject) => {
+   navigator.geolocation.getCurrentPosition(resolve, reject); 
+});
+
+promise
+  .then(position => console.log(position))
+  .catch(error => console.error(error))
+  .finally(() => console.log('done'));
+
+as demonstrated above, its callback has its "resolve" and "reject" functions and then we take our code from before and put it inside the function body (i.e. the callback body).
+
+We know that when we get "position" from the callback our "promise" is resolved successfully. So we can pass that "position" data to "resolve" as demonstrated in the immediately above code. 
+
+But what about if it fails??
+Well "getCurrentPosition()" has another callback for any errors and that's right after the first callback where we get access to the error data. So, as demonstrated in the immediately above code, we can just use an arrow function where we get the error and here we just want to "reject" our "promise" with that error data.
+
+So with this reference to our "promise" variable, we can use method chaining with then() and catch()to resolve the fulfilled or rejected promise. And since we're passing data to both "resolve" and "reject" we can get their values in the then() and catch() callbacks respectively as demonstrated in the immediately above code.
+
+And lastly, we can make use of the finally() method to implement our original console.log("done") that was supposed to run after everything was finished. 
+
+So now when we run the immediately above code we get the ressult that we wanted, so the "position" first and then "done" afterwards. And this is all being managed and controlled with "promises".
+
+Also note that, for an alternate syntax, if you want to make the immediately above code succint we can just pass "resolve" and "reject" as references to the success callback and error callback without having to write them entirely as functions like so:
+
+const promise = new Promise((resolve, reject) => {
+   navigator.geolocation.getCurrentPosition(resolve, reject); 
+});
+
+promise
+  .then(position => console.log(position))
+  .catch(error => console.error(error))
+  .finally(() => console.log('done'));
+
+and "resolve" and "reject" are still going to be passed the "position" and "error" values, and if we were to run it again we see "position" and then "done".
+
+Now, using the power of "promises" we can more easily and logically write "async" code or promisify confusing callback-based code
+
+
+
+*/
