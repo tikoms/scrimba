@@ -34,6 +34,7 @@ fetch("https://jsonplaceholder.typicode.com/pots/1")
     .then((data) => alert(data));
 */
 
+/*
 fetch("https://jsonplaceholder.typicode.com/pots/1")
     .then((response) => {
         if (!response.ok) {
@@ -42,3 +43,4 @@ fetch("https://jsonplaceholder.typicode.com/pots/1")
     })
     .then((data) => alert(data))
     .catch((Error) => alert(Error));
+*/
